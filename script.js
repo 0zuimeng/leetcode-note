@@ -1194,3 +1194,94 @@ function hideSearchResults() {
         document.getElementById('searchResults').classList.remove('active');
     }, 200);
 }
+// 仓库配置信息
+const GH_CONFIG = {
+    owner: "0zuimeng",
+    repo: "leetcode-note",
+    path: "problems-data.json"
+};
+
+// 显示/隐藏菜单
+function showAdminMenu() {
+    document.getElementById('adminModal').classList.add('active');
+}
+
+function closeAdminMenu() {
+    document.getElementById('adminModal').classList.remove('active');
+}
+
+// 提交逻辑中增加 Base64 对中文的支持
+async function submitToGithub() {
+    const token = document.getElementById('ghToken').value;
+    const btn = event.target;
+
+    const newProblem = {
+        id: parseInt(document.getElementById('newId').value),
+        title: document.getElementById('newTitle').value,
+        difficulty: document.getElementById('newDiff').value,
+        passRate: parseInt(document.getElementById('newPass').value),
+        category: document.getElementById('newCat').value,
+        type: document.getElementById('newType').value,
+        url: document.getElementById('newUrl').value
+    };
+
+    if (!token || isNaN(newProblem.id)) {
+        alert("请填写 Token 和有效的题号");
+        return;
+    }
+
+    try {
+        btn.disabled = true;
+        btn.textContent = "🚀 正在推送至 GitHub...";
+
+        // 1. 获取原文件内容
+        const getUrl = `https://api.github.com/repos/${GH_CONFIG.owner}/${GH_CONFIG.repo}/contents/${GH_CONFIG.path}`;
+        const res = await fetch(getUrl, {
+            headers: { "Authorization": `token ${token}` }
+        });
+
+        if (res.status === 404) throw new Error("未找到 problems-data.json，请检查仓库配置");
+        const fileData = await res.json();
+
+        // 使用针对中文优化的解码方式
+        const content = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
+
+        // 2. 查重并追加
+        if (content.problems.some(p => p.id === newProblem.id)) {
+            throw new Error("该题号已存在，请勿重复添加");
+        }
+        content.problems.push(newProblem);
+
+        // 3. 编码并回传 (解决中文乱码)
+        const updatedContent = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))));
+
+        const putRes = await fetch(getUrl, {
+            method: "PUT",
+            headers: {
+                "Authorization": `token ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: `Update: Add problem ${newProblem.id}`,
+                content: updatedContent,
+                sha: fileData.sha
+            })
+        });
+
+        if (putRes.ok) {
+            alert("✅ 同步成功！GitHub Pages 正在自动重新部署，请几分钟后刷新查看。");
+            closeAdminMenu();
+            // 本地静默更新数据
+            allProblems = content.problems;
+            organizeProblemsByRounds();
+            selectRound(currentRound);
+        } else {
+            throw new Error("GitHub 拒绝了更新请求，请检查 Token 权限");
+        }
+    } catch (err) {
+        alert("❌ 失败: " + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "确认同步并自动部署";
+    }
+}

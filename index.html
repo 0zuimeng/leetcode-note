@@ -9,6 +9,7 @@
 </head>
 
 <body>
+
     <div class="column-selector"
         style="max-width: 1200px; margin: 1rem auto; padding: 0 2rem; display: flex; gap: 1rem;">
         <button class="column-btn active" id="algoBtn" onclick="selectColumn('algo')">🧩 算法专栏</button>
@@ -55,10 +56,11 @@
                 </div>
                 <div class="user-info">
                     <span id="currentUser"></span>
+                    <button onclick="showAdminMenu()" class="btn-admin">➕ 添加题目</button>
                     <button onclick="toggleCalendar()" class="btn-calendar">📅 日历</button>
-                    <button onclick="showTipsMenu()" class="btn-tips">💡 刷题技巧</button>
+                    <button onclick="showTipsMenu()" class="btn-tips">💡 技巧</button>
                     <button onclick="showDataMenu()" class="btn-data">💾 数据</button>
-                    <button onclick="logout()" class="btn-logout">退出登录</button>
+                    <button onclick="logout()" class="btn-logout">退出</button>
                 </div>
             </div>
         </header>
@@ -285,6 +287,64 @@
             </div>
         </div>
     </div>
+    <button onclick="showAdminMenu()" class="btn-data" style="background: #4CAF50;">➕ 添加题目</button>
+    <div class="modal" id="adminModal">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header">
+                <h2>🚀 同步题目到 GitHub</h2>
+                <button onclick="closeAdminMenu()" class="modal-close">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="admin-form">
+                    <div class="form-group">
+                        <label>GitHub Access Token</label>
+                        <input type="password" id="ghToken" placeholder="输入具有 repo 权限的 PAT">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>题号</label>
+                            <input type="number" id="newId" placeholder="例如: 1667">
+                        </div>
+                        <div class="form-group">
+                            <label>通过率 (%)</label>
+                            <input type="number" id="newPass" placeholder="例如: 65">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>题目标题</label>
+                        <input type="text" id="newTitle" placeholder="请输入题目名称">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>题目类型</label>
+                            <select id="newType">
+                                <option value="algo">🧩 算法题</option>
+                                <option value="sql">🗄️ MySQL题</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>难度</label>
+                            <select id="newDiff">
+                                <option value="简单">🟢 简单</option>
+                                <option value="中等">🟡 中等</option>
+                                <option value="困难">🔴 困难</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>分类名称</label>
+                        <input type="text" id="newCat" placeholder="如: 字符串函数 或 动态规划">
+                    </div>
+                    <div class="form-group">
+                        <label>LeetCode URL</label>
+                        <input type="text" id="newUrl" placeholder="https://leetcode.cn/problems/...">
+                    </div>
+                    <button onclick="submitToGithub()" class="btn-primary" style="margin-top: 1rem;">确认同步并自动部署</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script src="script.js"></script>
 </body>
