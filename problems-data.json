@@ -4186,6 +4186,24 @@
       "category": "正则表达式",
       "type": "sql",
       "url": "https://leetcode.cn/problems/find-users-with-valid-e-mails/"
+    },
+    {
+      "id": 1000,
+      "title": "测试",
+      "difficulty": "中等",
+      "passRate": null,
+      "category": "test",
+      "type": "algo",
+      "url": "www.baidu.com"
+    },
+    {
+      "id": 19999,
+      "title": "测试1",
+      "difficulty": "简单",
+      "passRate": 66,
+      "category": "test",
+      "type": "algo",
+      "url": "test"
     }
   ]
 }
