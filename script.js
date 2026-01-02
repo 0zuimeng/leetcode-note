@@ -580,16 +580,31 @@ function closeCalendar() {
 
 // 日历功能函数
 function renderCalendar() {
-    const grid = document.getElementById('calendarGrid');
-    const monthDisplay = document.getElementById('currentMonth');
+    // 1. 获取 HTML 中已有的元素
+    const grid = document.getElementById('calendarGrid'); //
+    const monthDisplay = document.getElementById('currentMonth'); //
 
-    // 获取当月完成题目数量
-    const { totalCount } = getMonthlyActivity();
+    // 动态获取弹窗头部的标题元素 (h2)
+    const calendarModal = document.getElementById('calendarModal');
+    const calendarTitle = calendarModal ? calendarModal.querySelector('.modal-header h2') : null;
 
-    // 更新月份显示，包含完成题目数量
+    // 2. 动态设置标题内容和样式
+    if (calendarTitle) {
+        if (currentColumn === 'algo') {
+            calendarTitle.textContent = '🧩 算法专栏 · 刷题日历';
+            calendarTitle.style.color = '#667eea'; // 设置为算法主题色
+        } else {
+            calendarTitle.textContent = '🗄️ MySQL 专栏 · 刷题日历';
+            calendarTitle.style.color = '#2196F3'; // 设置为 MySQL 主题色
+        }
+    }
+
+    // 3. 获取当月数据 (逻辑保持不变)
+    const { totalCount } = getMonthlyActivity(); //
+
+    // 4. 更新月份和计数显示
     const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
-    monthDisplay.textContent = `${currentYear}年 ${monthNames[currentMonth]} (本月完成 ${totalCount} 题)`;
-
+    monthDisplay.textContent = `${currentYear}年 ${monthNames[currentMonth]} (本月完成 ${totalCount} 题)`; //
     // 清空日历网格
     grid.innerHTML = '';
 
