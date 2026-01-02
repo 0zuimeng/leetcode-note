@@ -349,7 +349,16 @@ function renderProblems() {
             e.stopPropagation();
             copyProblemNumber(problemNum, copyBtn);
         };
-
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.innerHTML = '🗑️';
+        deleteBtn.title = '从 GitHub 永久删除此题';
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteProblemFromGithub(problemNum, problemInfo ? problemInfo.title : '');
+        };
+        // 将按钮添加到容器
+        wrapper.appendChild(deleteBtn);
         wrapper.appendChild(item);
         wrapper.appendChild(copyBtn);
         grid.appendChild(wrapper);
@@ -1317,4 +1326,70 @@ function resetAdminForm() {
             element.selectedIndex = 0;
         }
     });
+}
+/**
+ * 从 GitHub 远程仓库物理删除题目
+ */
+async function deleteProblemFromGithub(problemId, title) {
+    const token = localStorage.getItem('gh_p_token') || document.getElementById('ghToken')?.value;
+
+    if (!token) {
+        alert("请先在‘添加题目’菜单中输入 GitHub Token 并成功同步一次以保存 Token。");
+        return;
+    }
+
+    // 二次确认，防止误删
+    const confirmMsg = `⚠️ 危险操作！\n\n确定要从 GitHub 仓库中永久删除题目：\n[${problemId}] ${title} 吗？\n\n此操作将修改远程 problems-data.json 文件。`;
+    if (!confirm(confirmMsg)) return;
+
+    try {
+        const getUrl = `https://api.github.com/repos/${GH_CONFIG.owner}/${GH_CONFIG.repo}/contents/${GH_CONFIG.path}`;
+
+        // 1. 获取当前文件及其 sha
+        const res = await fetch(getUrl, {
+            headers: { "Authorization": `token ${token}` }
+        });
+        if (!res.ok) throw new Error("无法获取远程文件，请检查 Token 权限");
+
+        const fileData = await res.json();
+        const content = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
+
+        // 2. 过滤掉要删除的题目
+        const originalLength = content.problems.length;
+        // 确保 ID 类型匹配（JSON 中可能是数字，参数可能是字符串）
+        content.problems = content.problems.filter(p => p.id.toString() !== problemId.toString());
+
+        if (content.problems.length === originalLength) {
+            alert("未在远程文件中找到该题目。");
+            return;
+        }
+
+        // 3. 提交更新
+        const updatedContent = btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2))));
+        const putRes = await fetch(getUrl, {
+            method: "PUT",
+            headers: {
+                "Authorization": `token ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: `🗑️ Delete problem: ${problemId} - ${title}`,
+                content: updatedContent,
+                sha: fileData.sha
+            })
+        });
+
+        if (putRes.ok) {
+            alert("✅ 删除成功！GitHub 正在自动重新部署，请稍后刷新。");
+            // 本地数据同步更新
+            allProblems = content.problems;
+            organizeProblemsByRounds();
+            renderCategories();
+        } else {
+            throw new Error("GitHub 拒绝了修改请求");
+        }
+    } catch (err) {
+        alert("❌ 删除失败: " + err.message);
+        console.error(err);
+    }
 }

@@ -1634,3 +1634,38 @@ body {
         flex-direction: column;
     }
 }
+
+/* 红色删除按钮样式 */
+.delete-btn {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    /* 放置在左上角，与右上角的复制按钮对称 */
+    width: 24px;
+    height: 24px;
+    background: white;
+    border: 2px solid #f44336;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    /* 默认隐藏 */
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+    padding: 0;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    color: #f44336;
+}
+
+/* 鼠标悬停在题目容器上时显示删除按钮 */
+.problem-wrapper:hover .delete-btn {
+    display: flex;
+}
+
+.delete-btn:hover {
+    background: #f44336;
+    color: white;
+    transform: scale(1.1);
+}
