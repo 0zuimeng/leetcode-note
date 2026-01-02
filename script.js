@@ -1277,7 +1277,7 @@ async function submitToGithub() {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                message: `Update: Add problem ${newProblem.id}`,
+                message: `🚀 新增题目：${newProblem.id} - ${newProblem.title}`,
                 content: updatedContent,
                 sha: fileData.sha
             })
@@ -1373,7 +1373,7 @@ async function deleteProblemFromGithub(problemId, title) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                message: `🗑️ Delete problem: ${problemId} - ${title}`,
+                message: `🗑️ 删除题目：${problemId} - ${title}`,
                 content: updatedContent,
                 sha: fileData.sha
             })
