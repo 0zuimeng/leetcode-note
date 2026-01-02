@@ -31,6 +31,12 @@ function selectColumn(column) {
 // 初始化时增加专栏选择
 document.addEventListener('DOMContentLoaded', function () {
     loadProblemsData();
+    // 新增：加载本地保存的GitHub Token
+    const savedToken = localStorage.getItem('gh_p_token');
+    if (savedToken) {
+        const tokenInput = document.getElementById('ghToken');
+        if (tokenInput) tokenInput.value = savedToken;
+    }
 });
 
 // 从JSON文件加载题目数据
@@ -1269,7 +1275,10 @@ async function submitToGithub() {
         });
 
         if (putRes.ok) {
+            // --- 新增：同步成功后保存 Token 到本地 ---
+            localStorage.setItem('gh_p_token', token);
             alert("✅ 同步成功！GitHub Pages 正在自动重新部署，请几分钟后刷新查看。");
+            resetAdminForm();
             closeAdminMenu();
             // 本地静默更新数据
             allProblems = content.problems;
@@ -1284,4 +1293,28 @@ async function submitToGithub() {
         btn.disabled = false;
         btn.textContent = "确认同步并自动部署";
     }
+}
+/**
+ * 新增函数：重置添加题目表单
+ * 除了 Token 外，清空所有题目相关的输入项
+ */
+function resetAdminForm() {
+    // 定义需要清空的 ID 列表
+    const fields = ['newId', 'newTitle', 'newPass', 'newCat', 'newUrl'];
+
+    fields.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = ''; // 清空内容
+        }
+    });
+
+    // 重置下拉菜单到第一个选项
+    const selects = ['newType', 'newDiff'];
+    selects.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.selectedIndex = 0;
+        }
+    });
 }
