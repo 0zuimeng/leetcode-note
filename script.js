@@ -14,14 +14,19 @@ let currentYear = currentDate.getFullYear();
 let currentColumn = 'algo'; // 当前专栏：algo 或 sql
 let pendingCheckIn = null; // 记录待打卡的题目信息
 // 专栏切换逻辑
+// 在 selectColumn 函数中触发日历重绘
 function selectColumn(column) {
     currentColumn = column;
     document.getElementById('algoBtn').classList.toggle('active', column === 'algo');
     document.getElementById('sqlBtn').classList.toggle('active', column === 'sql');
 
-    // 重新组织数据并刷新 UI
     organizeProblemsByRounds();
     selectRound(1);
+
+    // 新增：如果日历弹窗是打开状态，或者为了保证下次打开时数据正确，执行刷新
+    if (document.getElementById('calendarModal').classList.contains('active')) {
+        renderCalendar();
+    }
 }
 // 初始化时增加专栏选择
 document.addEventListener('DOMContentLoaded', function () {
@@ -661,19 +666,24 @@ function getDailyActivity(dateStr) {
             Object.entries(userProgress[roundKey]).forEach(([problemId, progress]) => {
                 if (progress.solvedAt) {
                     const solvedDate = new Date(progress.solvedAt).toISOString().split('T')[0];
-                    if (solvedDate === dateStr) {
-                        totalSolved++;
 
-                        // 获取题目详细信息
-                        const problemInfo = allProblems.find(p => p.id.toString() === problemId);
-                        if (problemInfo) {
-                            problems.push({
-                                id: problemId,
-                                round: roundKey,
-                                difficulty: problemInfo.difficulty,
-                                category: problemInfo.category,
-                                solvedAt: progress.solvedAt
-                            });
+                    if (solvedDate === dateStr) {
+                        // --- 核心修改：增加专栏过滤 ---
+                        const problemInfo = allProblems.find(p => p.id.toString() === problemId.toString());
+                        const problemType = (problemInfo && problemInfo.type) ? problemInfo.type : 'algo';
+
+                        // 仅记录属于当前激活专栏的题目
+                        if (problemType === currentColumn) {
+                            totalSolved++;
+                            if (problemInfo) {
+                                problems.push({
+                                    id: problemId,
+                                    round: roundKey,
+                                    difficulty: problemInfo.difficulty,
+                                    category: problemInfo.category,
+                                    solvedAt: progress.solvedAt
+                                });
+                            }
                         }
                     }
                 }
@@ -793,33 +803,23 @@ function nextMonth() {
 function getMonthlyActivity() {
     const year = currentYear;
     const month = currentMonth;
+    const lastDay = new Date(year, month + 1, 0).getDate();
 
-    // 获取当月第一天和最后一天
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
+    const problemsMap = new Map();
 
-    const monthProblems = [];
-    const problemsMap = new Map(); // 用于去重
-
-    // 遍历当月每一天
-    for (let day = 1; day <= lastDay.getDate(); day++) {
+    for (let day = 1; day <= lastDay; day++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        // 调用上面修改过的 getDailyActivity，它已经具备了专栏过滤功能
         const activity = getDailyActivity(dateStr);
 
         if (activity && activity.problems.length > 0) {
             activity.problems.forEach(problem => {
-                // 使用题目ID作为key去重
                 if (!problemsMap.has(problem.id)) {
                     problemsMap.set(problem.id, {
-                        id: problem.id,
-                        round: problem.round,
-                        difficulty: problem.difficulty,
-                        category: problem.category,
-                        solvedAt: problem.solvedAt,
+                        ...problem,
                         dates: [dateStr]
                     });
                 } else {
-                    // 如果题目已存在，只添加日期（不覆盖其他信息）
                     const existing = problemsMap.get(problem.id);
                     if (!existing.dates.includes(dateStr)) {
                         existing.dates.push(dateStr);
@@ -829,22 +829,12 @@ function getMonthlyActivity() {
         }
     }
 
-    // 转换为数组并按轮次分组
-    const problemsByRound = {
-        round1: [],
-        round2: [],
-        round3: [],
-        round4: []
-    };
-
+    const problemsByRound = { round1: [], round2: [], round3: [], round4: [] };
     problemsMap.forEach(problem => {
         problemsByRound[problem.round].push(problem);
     });
 
-    // 计算总数
-    const totalCount = problemsMap.size;
-
-    return { problemsByRound, totalCount };
+    return { problemsByRound, totalCount: problemsMap.size };
 }
 
 // 显示月度详情
