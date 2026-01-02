@@ -4195,15 +4195,6 @@
       "category": "test",
       "type": "algo",
       "url": ""
-    },
-    {
-      "id": 99999,
-      "title": "测试1",
-      "difficulty": "简单",
-      "passRate": null,
-      "category": "test",
-      "type": "algo",
-      "url": ""
     }
   ]
 }
