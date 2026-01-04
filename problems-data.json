@@ -4195,6 +4195,15 @@
       "category": "位运算",
       "type": "algo",
       "url": "https://leetcode.cn/problems/single-number-iii/description/"
+    },
+    {
+      "id": 2236,
+      "title": "判断根结点是否等于子结点之和",
+      "difficulty": "简单",
+      "passRate": 80,
+      "category": "二叉树",
+      "type": "algo",
+      "url": "https://leetcode.cn/problems/root-equals-sum-of-children/description/?envType=study-plan-v2&envId=primers-list"
     }
   ]
 }
