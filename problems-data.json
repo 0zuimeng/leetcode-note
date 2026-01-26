@@ -4204,6 +4204,15 @@
       "category": "二叉树",
       "type": "algo",
       "url": "https://leetcode.cn/problems/root-equals-sum-of-children/description/?envType=study-plan-v2&envId=primers-list"
+    },
+    {
+      "id": 709,
+      "title": "转换成小写字母",
+      "difficulty": "简单",
+      "passRate": 76,
+      "category": "字符串",
+      "type": "algo",
+      "url": "https://leetcode.cn/problems/to-lower-case/description/?envType=study-plan-v2&envId=primers-list"
     }
   ]
 }
