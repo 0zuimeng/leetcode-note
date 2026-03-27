@@ -4231,6 +4231,15 @@
       "category": "矩阵",
       "type": "algo",
       "url": "https://leetcode.cn/problems/transpose-matrix/description/?envType=study-plan-v2&envId=primers-list"
+    },
+    {
+      "id": 2586,
+      "title": "统计范围内的元音字符串数",
+      "difficulty": "简单",
+      "passRate": 77,
+      "category": "数组",
+      "type": "algo",
+      "url": "https://leetcode.cn/problems/count-the-number-of-vowel-strings-in-range/description/?envType=study-plan-v2&envId=primers-list"
     }
   ]
 }
