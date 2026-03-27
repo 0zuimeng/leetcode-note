@@ -4222,6 +4222,15 @@
       "category": "贪心",
       "type": "algo",
       "url": "https://leetcode.cn/problems/partition-labels/description/?envType=study-plan-v2&envId=top-100-liked"
+    },
+    {
+      "id": 867,
+      "title": "转置矩阵",
+      "difficulty": "简单",
+      "passRate": 69,
+      "category": "矩阵",
+      "type": "algo",
+      "url": "https://leetcode.cn/problems/transpose-matrix/description/?envType=study-plan-v2&envId=primers-list"
     }
   ]
 }
