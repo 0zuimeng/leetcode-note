@@ -4249,6 +4249,15 @@
       "category": "二分查找",
       "type": "algo",
       "url": ""
+    },
+    {
+      "id": 35,
+      "title": "搜索插入位置",
+      "difficulty": "简单",
+      "passRate": 49,
+      "category": "二分查找",
+      "type": "algo",
+      "url": "https://leetcode.cn/problems/search-insert-position/description/?envType=study-plan-v2&envId=top-100-liked"
     }
   ]
 }
