@@ -4258,6 +4258,15 @@
       "category": "二分查找",
       "type": "algo",
       "url": "https://leetcode.cn/problems/search-insert-position/description/?envType=study-plan-v2&envId=top-100-liked"
+    },
+    {
+      "id": 713,
+      "title": "乘积小于 K 的子数组",
+      "difficulty": "中等",
+      "passRate": 54,
+      "category": "滑动窗口",
+      "type": "algo",
+      "url": "https://leetcode.cn/problems/subarray-product-less-than-k/description/"
     }
   ]
 }
